@@ -148,6 +148,7 @@ public class EncoderTestBot extends SimpleRobot {
     }
     
     
+    // this method initialized a single jag for control
     private void initJag(CANJaguar jag, String jagName) {
         
         try {
@@ -164,6 +165,7 @@ public class EncoderTestBot extends SimpleRobot {
     }
     
     
+    // this method zeros a single jag encoder
     private void zeroJagEncoder(CANJaguar jag, String jagName) {
 
         try {
@@ -179,6 +181,7 @@ public class EncoderTestBot extends SimpleRobot {
     }
     
     
+    // this method prints the count/pos of a single jag encoder
     private void printJagEncoderPos(CANJaguar jag, String jagName) {
         
         try {
