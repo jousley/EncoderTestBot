@@ -55,12 +55,14 @@ public class EncoderTestBot extends SimpleRobot {
 
     
     
+    // autonomous mode
     public void autonomous() {
         System.out.println("---> Autonomous <---");
         driveTrain.setSafetyEnabled(false);
     }
         
         
+    // teleop mode
     public void operatorControl() {
         
         // jag to focus on
@@ -90,14 +92,23 @@ public class EncoderTestBot extends SimpleRobot {
     }
     
     
+    // test mode
+    public void test() {
+        System.out.println("---> Test <---");
+    }    
+    
+    
+    // disabled
     public void disabled() {
         System.out.println("---> Disabled <---");
     }
     
     
-    public void test() {
-        System.out.println("---> Test <---");
-    }
+
+    
+    // **************
+    // custom methods
+    // **************
     
     
     // this method creates and initializes the drive train, including the jags
@@ -176,9 +187,7 @@ public class EncoderTestBot extends SimpleRobot {
             System.out.println("--- Error Printing Encoder for " + jagName + "---");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
-        }    
-        
-        
+        }        
     }
     
 }
