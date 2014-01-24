@@ -37,7 +37,10 @@ public class EncoderTestBot extends SimpleRobot {
     public static CANJaguar frontRightMotor;
     public static CANJaguar backRightMotor;
     
-
+    public static final double p = 10.0;   
+    public static final double i = 0.01;
+    public static final double d = 0.01;
+    
     // declare our drive train
     public static RobotDrive driveTrain;
 
@@ -59,9 +62,22 @@ public class EncoderTestBot extends SimpleRobot {
     public void autonomous() {
         System.out.println("---> Autonomous <---");
         driveTrain.setSafetyEnabled(false);
+        
+        try{
+            frontRightMotor.enableControl(0);
+            frontRightMotor.changeControlMode(CANJaguar.ControlMode.kPosition);
+            frontRightMotor.setPID(p, i, d);
+            double fr = frontRightMotor.getPosition();
+            System.out.println("fr = " + frontRightMotor.getPosition() );
+            frontRightMotor.setX(fr + 25);
+            frontRightMotor.disableControl();
+        }catch (CANTimeoutException ex) {
+            System.out.println("--- Error running autonomous ---");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+        
     }
-        
-        
     // teleop mode
     public void operatorControl() {
         
@@ -167,17 +183,18 @@ public class EncoderTestBot extends SimpleRobot {
     
     // this method zeros a single jag encoder
     private void zeroJagEncoder(CANJaguar jag, String jagName) {
-
+/*
         try {
             System.out.println("+++ Zeroing encoder on " + jagName + " +++");
-            jag.disableControl();
-            jag.enableControl(0);
+            //jag.disableControl();
+            //jag.enableControl(0.0);
+            //jag.enableControl(0.0);
         } catch (CANTimeoutException ex) {
             System.out.println("--- Error zeroing encoder on " + jagName + " ---");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
-        
+ */       
     }
     
     
