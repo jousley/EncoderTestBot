@@ -48,12 +48,22 @@ public class EncoderTestBot extends SimpleRobot {
     Joystick leftstick;
     
     
+    CANJaguar jag;
+    String jagFullName;
+    String jagShortName;
     
     // constructor
     public EncoderTestBot() {
         
         leftstick = new Joystick(LEFT_STICK);
         createDriveTrain(FL_JAG,BL_JAG, FR_JAG, BR_JAG);
+        // jag to focus on
+        jag = frontRightMotor;
+        jagFullName = "frontRightMotor";
+        jagShortName = "fr";
+        
+        // setup and zero our focus jag
+        initJag(jag, jagFullName);
     }
 
     
@@ -62,33 +72,28 @@ public class EncoderTestBot extends SimpleRobot {
     public void autonomous() {
         System.out.println("---> Autonomous <---");
         driveTrain.setSafetyEnabled(false);
+        enablePositionControl(jag, jagShortName);
+
         
         try{
-            frontRightMotor.enableControl(0);
-            frontRightMotor.changeControlMode(CANJaguar.ControlMode.kPosition);
-            frontRightMotor.setPID(p, i, d);
             double fr = frontRightMotor.getPosition();
-            System.out.println("fr = " + frontRightMotor.getPosition() );
             frontRightMotor.setX(fr + 25);
-            frontRightMotor.disableControl();
+            System.out.println(jagShortName + "=" + jag.getPosition());
         }catch (CANTimeoutException ex) {
             System.out.println("--- Error running autonomous ---");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
-        
+        printJagAutonomous(jag, jagShortName);   
     }
+    
+    
     // teleop mode
     public void operatorControl() {
         
-        // jag to focus on
-        CANJaguar jag = frontRightMotor;
-        String jagFullName = "frontRightMotor";
-        String jagShortName = "fr";
         
-        // setup and zero our focus jag
-        initJag(jag, jagFullName);
-        zeroJagEncoder(jag, jagFullName);
+        enableTeleopControl(jag, jagShortName);
+        //zeroJagEncoder(jag, jagFullName);
         
         // turn on safety
         driveTrain.setSafetyEnabled(true);
@@ -169,10 +174,11 @@ public class EncoderTestBot extends SimpleRobot {
         
         try {
             System.out.println("+++ Constructing " + jagName + " +++");
-            jag.enableControl(0);
+            //jag.enableControl(0);
             jag.configEncoderCodesPerRev(ENCODER_CODES_PER_REV);
             //jag.changeControlMode(CANJaguar.ControlMode.kPosition);
             jag.setPositionReference(CANJaguar.PositionReference.kQuadEncoder);
+            jag.disableControl();
         } catch (CANTimeoutException ex) {
             System.out.println("--- Error enabling closed control on " + jagName + " ---");
             System.out.println(ex.getMessage());
@@ -183,18 +189,17 @@ public class EncoderTestBot extends SimpleRobot {
     
     // this method zeros a single jag encoder
     private void zeroJagEncoder(CANJaguar jag, String jagName) {
-/*
+    /*
         try {
             System.out.println("+++ Zeroing encoder on " + jagName + " +++");
-            //jag.disableControl();
-            //jag.enableControl(0.0);
-            //jag.enableControl(0.0);
+            jag.enableControl(0);
+            jag.disableControl();
         } catch (CANTimeoutException ex) {
             System.out.println("--- Error zeroing encoder on " + jagName + " ---");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
- */       
+    */    
     }
     
     
@@ -210,4 +215,50 @@ public class EncoderTestBot extends SimpleRobot {
         }        
     }
     
+
+    private void enablePositionControl(CANJaguar jag, String jagName){
+
+        try{
+            jag.disableControl();
+            System.out.println("---> Position control enabled <---");
+            jag.changeControlMode(CANJaguar.ControlMode.kPosition);
+            jag.setPID(p, i, d);
+            jag.enableControl(0);
+        }catch (CANTimeoutException ex) {
+            System.out.println("--- Error enabling position control ---");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+
+    private void enableTeleopControl(CANJaguar jag, String jagName){
+
+        try{
+            jag.enableControl(0);
+            System.out.println("---> Teleop control enabled <---");
+            jag.changeControlMode(CANJaguar.ControlMode.kPercentVbus);
+            jag.setPID(0, 0, 0);
+            jag.disableControl();
+        }catch (CANTimeoutException ex) {
+            System.out.println("--- Error enabling TeleopControl control ---");
+            System.out.println(ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+
+    private void printJagAutonomous(CANJaguar jag, String jagShortName ){
+    
+        while(isEnabled()){
+            try{
+                System.out.println(jagShortName + "=" + jag.getPosition());
+            }catch (CANTimeoutException ex) {
+                System.out.println("--- Error enabling TeleopControl control ---");
+                System.out.println(ex.getMessage());
+                ex.printStackTrace();
+            }
+            Timer.delay(0.01);
+        }
+    
+    }
 }
