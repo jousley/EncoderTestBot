@@ -36,6 +36,7 @@ public class EncoderTestBot extends SimpleRobot {
     public static final double i = 0.01;
     public static final double d = 0.01;
 
+    //calculations for drive by inches/feet
     public static final double PI = 3.141592653;
     public static final double WHEEL_DIAMETER = 6;
     public static final double INCHES_PER_REV = (PI * WHEEL_DIAMETER);
@@ -55,11 +56,12 @@ public class EncoderTestBot extends SimpleRobot {
 
         leftstick = new Joystick(LEFT_STICK);
         createDriveTrain(FL_JAG, BL_JAG, FR_JAG, BR_JAG);
+        
         // jag to focus on
         jag = frontRightMotor;
         jagFullName = "frontRightMotor";
         jagShortName = "fr";
-        System.out.println("----" + INCHES_PER_REV + "----");
+        
         // setup and zero our focus jag
         initJag(jag, jagFullName);
     }
@@ -70,8 +72,9 @@ public class EncoderTestBot extends SimpleRobot {
         driveTrain.setSafetyEnabled(false);
         zeroJagEncoder(jag, jagFullName);
         enablePositionControl(jag, jagShortName);
-        driveByInches(jag, jagShortName, 120);
-
+        driveByFeet(jag, jagShortName, 10);
+        
+        
         /*
          try{
          double fr = frontRightMotor.getPosition();
@@ -200,7 +203,8 @@ public class EncoderTestBot extends SimpleRobot {
             ex.printStackTrace();
         }
     }
-
+    
+    //readies a single jag for autonomous control 
     private void enablePositionControl(CANJaguar jag, String jagName) {
 
         try {
@@ -216,6 +220,7 @@ public class EncoderTestBot extends SimpleRobot {
         }
     }
 
+    //readies a single jag for teleop control    
     private void enableTeleopControl(CANJaguar jag, String jagName) {
 
         try {
@@ -232,6 +237,7 @@ public class EncoderTestBot extends SimpleRobot {
         }
     }
 
+    //prints encoder values continuously in auto
     private void printJagAutonomous(CANJaguar jag, String jagShortName) {
 
         while (isEnabled()) {
@@ -247,12 +253,13 @@ public class EncoderTestBot extends SimpleRobot {
 
     }
 
-    //revPerIN = 18.849555918 
+    //tells a single jag to drive X inches  
     private void driveByInches(CANJaguar jag, String jagShortName, double distance) {
         
         try{
             double fr = jag.getPosition();
-            jag.setX(fr + INCHES_PER_REV / distance);
+            double newpos = fr + (distance / INCHES_PER_REV);
+            jag.setX(newpos);
         }catch (CANTimeoutException ex) {
             System.out.println("--- Error running autonomous ---");
             System.out.println(ex.getMessage());
@@ -260,12 +267,11 @@ public class EncoderTestBot extends SimpleRobot {
         }
         printJagAutonomous(jag, jagShortName);
     }
-
+    
+    //tells a single jag to drive X feet
     private void driveByFeet(CANJaguar jag, String jagShortName, double distance) {
         distance = (distance * 12);
-        System.out.println("---------" + distance + "----------");
         driveByInches(jag, jagShortName, distance);
 
     }
-
 }
