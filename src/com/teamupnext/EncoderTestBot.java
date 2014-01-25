@@ -74,8 +74,7 @@ public class EncoderTestBot extends SimpleRobot {
         enablePositionControl(jag, jagShortName);
         driveByFeet(jag, jagShortName, 10);
         
-        
-        /*
+         /*
          try{
          double fr = frontRightMotor.getPosition();
          frontRightMotor.setX(fr + 25);
