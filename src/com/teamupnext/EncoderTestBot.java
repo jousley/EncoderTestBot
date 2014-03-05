@@ -55,7 +55,7 @@ public class EncoderTestBot extends SimpleRobot {
     public EncoderTestBot() {
 
         leftstick = new Joystick(LEFT_STICK);
-        createDriveTrain(FL_JAG, BL_JAG, FR_JAG, BR_JAG);
+        createDriveTrain(FL_JAG, BL_JAG, -FR_JAG, -BR_JAG);
         
         // jag to focus on
         jag = frontRightMotor;
@@ -142,7 +142,9 @@ public class EncoderTestBot extends SimpleRobot {
         }
 
         driveTrain = new RobotDrive(frontLeftMotor, backLeftMotor, frontRightMotor, backRightMotor);
-
+        driveTrain.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
+        driveTrain.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+   
     }
 
     // this method destroys the drive train
